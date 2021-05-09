@@ -583,13 +583,15 @@ CLerror CLElectrosFunctor<T>::LoadKernels ( size_t deviceID )
      */
 
     // BLOCK size
-    data.local = {BLOCK_X, 1, 1};
+    data.local[0] = BLOCK_X;
+    data.local[1] = 1;
+    data.local[2] = 1;
     size_t local_MT[3] = {BLOCK_X_MT, BLOCK_Y_MT, 1};
     // GRID size
-    data.global = {((this->m_nLines + BLOCK_X - 1)/BLOCK_X)
-                        * BLOCK_X, 1, 1
-                       };
+    data.global[0] = ((this->m_nLines + BLOCK_X - 1)/BLOCK_X) * BLOCK_X;
     data.global[0] /= data.vecWidth; data.local[0] /= data.vecWidth;
+    data.global[1] = 1;
+    data.global[2] = 1;
     cout<<"Local   : "<<data.local[0]<<" "<<data.local[1]<<" "
             <<data.local[2]<<endl;
     cout<<"Local_MT: "<<local_MT[0]<<" "<<local_MT[1]<<" "<<local_MT[2]<<endl;
