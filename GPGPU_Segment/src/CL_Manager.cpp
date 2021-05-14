@@ -183,6 +183,8 @@ ClManager::clPlatformProp::clPlatformProp(cl_platform_id platID)
     for (size_t i = 0; i < nDev; i++)
     {
         devices.push_back(new clDeviceProp(deviceIDs[i]));
+        /* Some platforms don't provide CL_DEVICE_PLATFORM for the device */
+        devices.back()->platform= this->platformID;
     }
     delete[] deviceIDs;
 
@@ -411,12 +413,6 @@ ClManager::clDeviceProp::clDeviceProp(cl_device_id devID)
                     CL_DEVICE_NAME,
                     sizeof(this->name),
                     (void*)this->name,
-                    0);
-
-    clGetDeviceInfo(this->deviceID,
-                    CL_DEVICE_PLATFORM,
-                    sizeof(this->platform),
-                    (void*)this->platform,
                     0);
 
     clGetDeviceInfo(this->deviceID,
