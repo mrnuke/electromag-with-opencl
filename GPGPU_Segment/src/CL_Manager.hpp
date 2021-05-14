@@ -18,7 +18,8 @@
 #ifndef _CL_MANAGER_H
 #define _CL_MANAGER_H
 
-#include "OpenCL_Dyn_Load.h"
+#define CL_TARGET_OPENCL_VERSION 110
+#include <CL/cl.h>
 #include <iostream>
 #include <vector>
 

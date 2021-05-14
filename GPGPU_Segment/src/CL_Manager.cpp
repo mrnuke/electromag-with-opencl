@@ -65,13 +65,6 @@ void ClManager::ScanDevices()
     }
     
     cl_int errCode = CL_SUCCESS;
-    // Load the driver
-    errCode = clLibLoad();
-    if (errCode != CL_SUCCESS)
-    {
-        cerr<<" Failed to load OpenCL Library"<<endl;
-        return;
-    }
 
     // Query the number of platforms
     cl_uint nPlat;

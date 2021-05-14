@@ -26,7 +26,6 @@ OpenCL::ClManager CLElectrosFunctor<T>::m_DeviceManager;
 #include <X-Compat/HPC Timing.h>
 #include <iostream>
 #include <fstream>
-#include "OpenCL_Dyn_Load.h"
 #include "Electrostatics.h"
 
 #define CL_ASSERTC(err, message) \
