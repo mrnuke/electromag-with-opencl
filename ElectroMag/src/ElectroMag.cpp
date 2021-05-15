@@ -345,59 +345,7 @@ int main ( int argc, char* argv[] )
 
     // Save points that are significanlty off for regression analysis
     if ( regressData && CPUenable && GPUenable )
-    {
-        regress.open ( "regression.txt" );//, ios::app);
-        cout<<" Beginning verfication procedure"<<endl;
-        for ( size_t line = 0; line < n; line++ )
-        {
-            // Looks for points that are close to the CPU value
-            // but suddenly jumps off
-            // This ususally exposes GPU kernel syncronization bugs
-            size_t step = 0;
-            do
-            {
-                size_t i = step*n + line;
-                size_t iLast = ( step-1 ) *n + line;
-                // Calculate the distance between the CPU and GPU point
-                float offset3D = vec3Len ( vec3 ( CPUlines[i],GPUlines[i] ) );
-                if ( offset3D > 0.1f )
-                {
-                    regress<<" CPUL ["<<line<<"]["<<step-1<<"] x: "
-                    <<CPUlines[iLast].x<<" y: "<<CPUlines[iLast].y<<" z: "
-                    <<CPUlines[iLast].z
-                    <<endl
-                    <<" GPUL ["<<line<<"]["<<step-1<<"] x: "
-                    <<GPUlines[iLast].x<<" y: "<<GPUlines[iLast].y
-                    <<" z: "<<GPUlines[iLast].z
-                    <<endl
-                    <<" 3D offset: "
-                    <<vec3Len ( vec3 ( CPUlines[iLast],GPUlines[iLast] ) )
-                    <<endl;
-                    regress<<" CPUL ["<<line<<"]["<<step<<"] x: "
-                    <<CPUlines[i].x<<" y: "<<CPUlines[i].y<<" z: "
-                    <<CPUlines[i].z
-                    <<endl
-                    <<" GPUL ["<<line<<"]["<<step<<"] x: "<<GPUlines[i].x
-                    <<" y: "<<GPUlines[i].y<<" z: "<<GPUlines[i].z
-                    <<endl
-                    <<" 3D offset: "<<offset3D
-                    <<endl<<endl;
-                    // If a leap is found; skip the current line
-                    break;
-                }
-            }
-            while ( ++step < len );
-            // Small anti-boredom indicator
-            if ( ! ( line%256 ) )
-            {
-                cout<<" "<< ( double ) line/n*100<<" % complete"<<endl;
-            }
-        }
-        // When done, close file to prevent system crashes from resulting
-        // in incomplete regressions
-        regress.close();
-        cout<<" Verification complete"<<endl;
-    }
+        compare_electric_fields(CPUlines, GPUlines, n, len, "regresion.txt");
 
     // Wait for renderer to close program if active; otherwise quit directly
     if ( display )

@@ -26,6 +26,12 @@
 
 typedef void* ArrayHandle;
 
+void compare_electric_fields(Vector3<Array<float>> &field_a,
+			     Vector3<Array<float>> &field_b,
+			     size_t num_lines, size_t line_len,
+			     const char *output_filename);
+
+
 template<class T>
 void InitializeFieldLineArray (
     Vector3<Array<T> > &arrMain,  ///< Pointer to the array to initialize

@@ -6,6 +6,7 @@ set(ELECTROMAG_SRCS
     src/ElectroMag.cpp
     src/Graphics_dynlink.cpp
     src/Particle_System.cpp
+    src/regression_compare.cpp
     src/CPUID/CPUID.cpp
 )
 
