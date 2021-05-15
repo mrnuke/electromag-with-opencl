@@ -78,10 +78,6 @@ int main ( int argc, char* argv[] )
     OpenCL::GlobalClManager.ListAllDevices();
 
 
-#ifndef _DEBUG
-    //freopen( "file.txt", "w", stderr );
-#endif//DEBUG
-
     ParamLevel paramLevel = __normal;
 
     SimulationParams simConfig = DefaultParams;
@@ -487,10 +483,6 @@ int main ( int argc, char* argv[] )
         };
         FieldDisplay->KillAsync();
     }
-    // do a DEBUG wait before cleaning resources
-#ifdef _DEBUG
-    if ( !display ) system ( "pause" );
-#endif
     // Tidyness will help in the future
     CPUlines.Free();
     GPUlines.Free();
