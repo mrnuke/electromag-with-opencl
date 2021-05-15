@@ -55,6 +55,8 @@ ClManager::~ClManager()
 
 void ClManager::ScanDevices()
 {
+    cl_int ret;
+
     if(platforms == NULL)
         platforms = new std::vector<clPlatformProp*>();
     if(platforms->size())
@@ -63,22 +65,20 @@ void ClManager::ScanDevices()
            delete platform;
         platforms->clear();
     }
-    
-    cl_int errCode = CL_SUCCESS;
 
     // Query the number of platforms
     cl_uint nPlat;
-    errCode = clGetPlatformIDs(0, 0, &nPlat);
-    if (errCode != CL_SUCCESS)
-        cerr<<" Failed to get number of CL platforms with code "<<errCode<<endl;
+    ret = clGetPlatformIDs(0, 0, &nPlat);
+    if (ret != CL_SUCCESS)
+        cerr<<" Failed to get number of CL platforms with code "<<ret<<endl;
     if (!nPlat) return;
 
     // Temporary storage for the platform IDs
     cl_platform_id *platformIDs = new cl_platform_id[nPlat];
     // Get the IDs of each platform
-    errCode = clGetPlatformIDs(nPlat, platformIDs, 0);
-    if (errCode != CL_SUCCESS)
-        cerr<<" Failed to get platform IDs with code "<<errCode<<endl;
+    ret = clGetPlatformIDs(nPlat, platformIDs, 0);
+    if (ret != CL_SUCCESS)
+        cerr<<" Failed to get platform IDs with code "<<ret<<endl;
 
     // Now fill the properties of each platform
     for (size_t i = 0; i< nPlat; i++)
