@@ -86,7 +86,6 @@ int main ( int argc, char* argv[] )
     bool visualProgressBar = false;
     bool randseed = false;
     bool randfieldinit = false;
-    bool debugData = false;
     bool regressData = false;
     // Precision to use
     bool useCpuDP = false;
@@ -137,8 +136,6 @@ int main ( int argc, char* argv[] )
             randseed = true;
         else if ( !strcmp ( argv[i], "--randfieldinit" ) )
             randfieldinit = true;
-        else if ( !strcmp ( argv[i], "--postrundebug" ) )
-            debugData = true;
         else if ( !strcmp ( argv[i], "--autoregress" ) )
             regressData = true;
         else if ( !strcmp ( argv[i], "--cpuprecision=double" ) )
@@ -447,32 +444,6 @@ int main ( int argc, char* argv[] )
         regress.close();
         cout<<" Verification complete"<<endl;
     }
-
-    while ( debugData )
-    {
-        size_t line, step;
-        std::cin>> line>>step;
-        std::cin.clear();
-        std::cin.ignore ( 100, '\n' );
-        size_t i = step*n + line;
-
-        if ( CPUenable )
-        {
-            cout<<" CPUL ["<<line<<"]["<<step<<"] x: "<<CPUlines[i].x
-                <<" y: "<<CPUlines[i].y<<" z: "<<CPUlines[i].z<<endl;
-        }
-        if ( GPUenable )
-        {
-            cout<<" GPUL ["<<line<<"]["<<step<<"] x: "<<GPUlines[i].x
-                <<" y: "<<GPUlines[i].y<<" z: "<<GPUlines[i].z<<endl;
-        }
-        if ( CPUenable && GPUenable )
-        {
-            float offset3D = vec3Len ( vec3 ( CPUlines[i],GPUlines[i] ) );
-            cout<<" 3D offset: "<<offset3D<<endl;
-        }
-    }
-
 
     // Wait for renderer to close program if active; otherwise quit directly
     if ( display )
