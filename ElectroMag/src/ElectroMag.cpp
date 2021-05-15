@@ -83,7 +83,6 @@ int main ( int argc, char* argv[] )
     SimulationParams simConfig = DefaultParams;
     bool saveData = false, CPUenable = false, GPUenable = true, display = true;
     bool useCurvature = true;
-    bool visualProgressBar = false;
     bool randseed = false;
     bool randfieldinit = false;
     bool regressData = false;
@@ -127,8 +126,6 @@ int main ( int argc, char* argv[] )
         {
             if ( paramLevel < __fuckingInsane ) paramLevel = __fuckingInsane;
         }
-        else if ( !strcmp ( argv[i], "--GUI" ) )
-            visualProgressBar = true;
         else if ( !strcmp ( argv[i], "--randseed" ) )
             randseed = true;
         else if ( !strcmp ( argv[i], "--randfieldinit" ) )
@@ -175,9 +172,6 @@ int main ( int argc, char* argv[] )
     std::clog<<" SSE4.1:\t"<<support[cpuInfo.SSE41]<<endl;
     std::clog<<" SSE4.2:\t"<<support[cpuInfo.SSE42]<<endl;
     std::clog<<" AVX256:\t"<<support[cpuInfo.AVX]<<endl;
-
-    // Now that checks are performed, start the Frontend
-    //if(visualProgressBar) MainGUI.StartAsync();
 
     GPUenable = false;
     CPUenable=true;
