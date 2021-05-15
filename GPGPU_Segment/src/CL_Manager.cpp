@@ -59,8 +59,8 @@ void ClManager::ScanDevices()
         platforms = new std::vector<clPlatformProp*>();
     if(platforms->size())
     {
-        for(size_t i = 0; i < platforms->size(); i++)
-            delete (*platforms)[i];
+        for(auto platform : *platforms)
+           delete platform;
         platforms->clear();
     }
     
@@ -105,9 +105,9 @@ size_t ClManager::GetNumDevices()
     if (!deviceScanComplete) ScanDevices();
 
     size_t nDev = 0;
-    for (size_t i = 0; i < platforms->size(); i++)
+    for (auto platform : *platforms)
     {
-        nDev += (*platforms)[i]->devices.size();
+        nDev += platform->devices.size();
     }
     return nDev;
 }
@@ -564,23 +564,21 @@ ClManager::clDeviceProp::clDeviceProp(cl_device_id devID)
 
 ClManager::clPlatformProp::~clPlatformProp()
 {
-    for(size_t i = 0; i < devices.size(); i++)
-        delete devices[i];
+    for(auto device : devices)
+        delete device;
     devices.clear();
 }
 
 void ClManager::ListAllDevices(std::ostream& out)
 {
     out<<"OpenCL platforms/devices:"<<endl;
-    for (size_t i = 0; i < platforms->size(); i++)
+    for (clPlatformProp *current : *platforms)
     {
-        clPlatformProp *current = (*platforms)[i];
         out<<" Platform: "<<current->name<<" ; ID: "<<current->platformID<<endl;
         out<<"  Version: "<<current->version<<endl;
         out<<"  Vendor: "<<current->vendor<<endl;
-        for (size_t j = 0; j < current->devices.size(); j++)
+        for (clDeviceProp *dev : current->devices)
         {
-            clDeviceProp *dev = current->devices[j];
             out<<"   Device: "<<dev->name<<endl;
             out<<"    Global memory: "<<dev->globalMemSize/1024/1024<<" MB"
                 <<endl;
