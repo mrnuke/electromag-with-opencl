@@ -87,9 +87,6 @@ int main ( int argc, char* argv[] )
     bool randseed = false;
     bool randfieldinit = false;
     bool regressData = false;
-    // Precision to use
-    bool useCpuDP = false;
-    bool useGpgpuDP = false;
     // OpenCL devel tests?
     bool clMode = false;
     // Get command-line options;
@@ -138,10 +135,6 @@ int main ( int argc, char* argv[] )
             randfieldinit = true;
         else if ( !strcmp ( argv[i], "--autoregress" ) )
             regressData = true;
-        else if ( !strcmp ( argv[i], "--cpuprecision=double" ) )
-            useCpuDP = true;
-        else if ( !strcmp ( argv[i], "--gpuprecision=double" ) )
-            useGpgpuDP = true;
         else if ( !strcmp ( argv[i], "--clmode" ) )
             clMode = true;
         else
