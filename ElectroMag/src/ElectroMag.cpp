@@ -81,7 +81,7 @@ int main ( int argc, char* argv[] )
     ParamLevel paramLevel = __normal;
 
     SimulationParams simConfig = DefaultParams;
-    bool saveData = false, CPUenable = false, GPUenable = true, display = true;
+    bool CPUenable = false, GPUenable = true, display = true;
     bool useCurvature = true;
     bool randseed = false;
     bool randfieldinit = false;
@@ -98,8 +98,6 @@ int main ( int argc, char* argv[] )
             GPUenable = false;
             CPUenable = true;
         }
-        else if ( !strcmp ( argv[i], "--save" ) )
-            saveData = true;
         else if ( !strcmp ( argv[i], "--nodisp" ) )
             display = false;
         else if ( !strcmp ( argv[i], "--bogo" ) )
@@ -220,8 +218,6 @@ int main ( int argc, char* argv[] )
     if ( CPUenable ) CPUlines.AlignAlloc ( n*len );
     perfPacket CPUperf = {0, 0}, GPUperf = {0, 0};
     std::ofstream data, regress;
-    if ( saveData )
-        data.open ( "data.txt" );
     //MainGUI.RegisterProgressIndicator((double * volatile)&CPUperf.progress);
 
     // Do not activate if memory allocation fails
@@ -345,35 +341,6 @@ int main ( int argc, char* argv[] )
     else
     {
         cout<<" Skipping display"<<endl;
-    }
-
-    // do stuff here
-    // This will generate files non-worthy of FAT32 or non-RAID systems
-    if ( saveData && ( CPUenable || GPUenable ) )
-    {
-        cout<<" Beginning save procedure"<<endl;
-        for ( size_t line = 0; line < n; line++ )
-        {
-            for ( size_t step = 0; step < len; step++ )
-            {
-                int i = step*n + line;
-                if ( CPUenable )
-                {
-                    data<<" CPUL ["<<line<<"]["<<step<<"] x: "<<CPUlines[i].x
-                    <<" y: "<<CPUlines[i].y<<" z: "<<CPUlines[i].z
-                    <<endl;
-                }
-                if ( GPUenable )
-                {
-                    data<<" GPUL ["<<line<<"]["<<step<<"] x: "<<GPUlines[i].x
-                    <<" y: "<<GPUlines[i].y<<" z: "<<GPUlines[i].z
-                    <<endl;
-                }
-            }
-            float percent = ( float ) line/n*100;
-            cout<<percent<<" %complete"<<endl;
-        }
-        cout<<" Save procedure complete"<<endl;
     }
 
     // Save points that are significanlty off for regression analysis
