@@ -31,6 +31,7 @@
 #define FPprecision float
 
 struct SimulationParams {
+	const char *name;
 	size_t nx; // Number of lines on the x direction
 	size_t ny; // Number of lines on the y direction
 	size_t nz; // Number of lines on the z direction
@@ -38,29 +39,17 @@ struct SimulationParams {
 	size_t pDynamic; // Number of dynamic charge elements
 	size_t len; // Number of steps of a field line
 };
-// Default size for comparison with CPU performance
-SimulationParams DefaultParams = { 128, 128, 1, 1024, 0, 2500 };
-// Expect to fail on systems with under 3GB
-SimulationParams EnhancedParams = { 256, 112, 1, 2048, 0, 5000 };
-// Expect to fail on systems with under 6GB
-SimulationParams ExtremeParams = { 256, 256, 1, 2048, 0, 5000 };
-// Requires minimum 16GB system RAM + host buffers
-SimulationParams InsaneParams = { 512, 512, 1, 2048, 0, 5000 };
-// Requires minimum 24GB system RAM + host buffers
-SimulationParams FuckingInsaneParams = { 1024, 1024, 1, 5120, 0, 10000 };
-// Should work acceptably on most multi-core CPUs
-SimulationParams CpuModeParams = { 64, 64, 1, 1000, 0, 1000 };
-SimulationParams MicroParams = { 16, 16, 1, 1000, 0, 1000 };
-SimulationParams BogoParams = { 16, 16, 1, 50, 0, 500 };
-enum ParamLevel {
-	__bogo,
-	__micro,
-	__cpu,
-	__normal,
-	__enhanced,
-	__extreme,
-	__insane,
-	__fuckingInsane
+
+static const struct SimulationParams param_list[] = {
+	{ "default", 128, 128, 1, 1024, 0, 2500 },
+	{ "enhanced", 256, 112, 1, 2048, 0, 5000 },
+	{ "extreme", 256, 256, 1, 2048, 0, 5000 },
+	{ "insane", 512, 512, 1, 2048, 0, 5000 },
+	{ "fuckinginsane", 1024, 1024, 1, 5120, 0, 10000 },
+	{ "cpu", 64, 64, 1, 1000, 0, 1000 },
+	{ "micro", 16, 16, 1, 1000, 0, 1000 },
+	{ "bogo", 16, 16, 1, 50, 0, 500 },
+	{ "" },
 };
 
 void TestCL(Vector3<Array<float> > &fieldLines,
@@ -72,18 +61,64 @@ using std::cout;
 using std::endl;
 using std::chrono::milliseconds;
 using std::this_thread::sleep_for;
+
+static const char *strnext(const char *str, const char sep)
+{
+	const char *substring = strchr(str, sep);
+
+	if (!substring)
+		return "";
+
+	return ++substring;
+}
+
+static bool starts_with(const char *str, const char *start)
+{
+	return str == strstr(str, start);
+}
+
+static const struct SimulationParams *get_sim_params(const char *name)
+{
+	const struct SimulationParams *sim = param_list;
+
+	do {
+		if (!strcmp(sim->name, name))
+			return sim;
+
+		sim++;
+	} while (strcmp(sim->name, ""));
+
+	return NULL;
+}
+
+static void print_simsize_help(const char *name)
+{
+	const struct SimulationParams *sim = param_list;
+
+	cout << "Invalid similatin parameter '" << name << "'" << endl;
+	cout << "Available options are";
+
+	do {
+		cout << " '" << sim->name << "'";
+		sim++;
+	} while (strcmp(sim->name, ""));
+
+	cout << endl;
+}
+
 // to redirect stdout and stderr to out.txt use:
 //              >out.txt  2>&1
 int main(int argc, char *argv[])
 {
+	const char *sim_name;
+
 	cout << " Electromagnetism simulation application" << endl;
 	cout << " Compiled on " << __DATE__ << " at " << __TIME__ << endl;
 
 	OpenCL::GlobalClManager.ListAllDevices();
 
-	ParamLevel paramLevel = __normal;
-
-	SimulationParams simConfig = DefaultParams;
+	SimulationParams simConfig = param_list[0];
+	const SimulationParams *sim;
 	bool CPUenable = false, GPUenable = true, display = true;
 	bool useCurvature = true;
 	bool randseed = false;
@@ -100,24 +135,14 @@ int main(int argc, char *argv[])
 			CPUenable = true;
 		} else if (!strcmp(argv[i], "--nodisp")) {
 			display = false;
-		} else if (!strcmp(argv[i], "--bogo")) {
-			if (paramLevel == __normal)
-				paramLevel = __bogo;
-		} else if (!strcmp(argv[i], "--micro")) {
-			if (paramLevel == __normal)
-				paramLevel = __micro;
-		} else if (!strcmp(argv[i], "--enhanced")) {
-			if (paramLevel < __enhanced)
-				paramLevel = __enhanced;
-		} else if (!strcmp(argv[i], "--extreme")) {
-			if (paramLevel < __extreme)
-				paramLevel = __extreme;
-		} else if (!strcmp(argv[i], "--insane")) {
-			if (paramLevel < __insane)
-				paramLevel = __insane;
-		} else if (!strcmp(argv[i], "--fuckingInsane")) {
-			if (paramLevel < __fuckingInsane)
-				paramLevel = __fuckingInsane;
+		} else if (starts_with(argv[i], "--simsize")) {
+			sim_name = strnext(argv[i], '=');
+			sim = get_sim_params(sim_name);
+			if (!sim) {
+				print_simsize_help(sim_name);
+				return EXIT_FAILURE;
+			}
+			simConfig = *sim;
 		} else if (!strcmp(argv[i], "--randseed")) {
 			randseed = true;
 		} else if (!strcmp(argv[i], "--randfieldinit")) {
@@ -169,33 +194,6 @@ int main(int argc, char *argv[])
 	// Statistics show that users are happier when the program outputs fun
 	// information abot their toys
 
-	// Set correct parameter configuration
-	switch (paramLevel) {
-	case __bogo:
-		simConfig = BogoParams;
-		break;
-	case __micro:
-		simConfig = MicroParams;
-		break;
-	case __normal:
-		simConfig = DefaultParams;
-		break;
-	case __enhanced:
-		simConfig = EnhancedParams;
-		break;
-	case __extreme:
-		simConfig = ExtremeParams;
-		break;
-	case __insane:
-		simConfig = InsaneParams;
-		break;
-	case __fuckingInsane:
-		simConfig = FuckingInsaneParams;
-		break;
-	case __cpu: //Fall Through
-	default:
-		simConfig = CpuModeParams;
-	}
 	// Initialze data containers
 	size_t nw = (int)simConfig.nx, nh = (int)simConfig.ny,
 	       nd = (int)simConfig.nz, n = nh * nw * nd,
