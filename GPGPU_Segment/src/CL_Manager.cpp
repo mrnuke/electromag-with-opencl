@@ -114,6 +114,20 @@ size_t ClManager::GetNumDevices()
 	return nDev;
 }
 
+const ClManager::clPlatformProp *ClManager::FindPlatformByName(std::string partial_name)
+{
+	size_t substr_position;
+
+	for (auto platform: *platforms) {
+		std::string full_name(platform->name);
+		substr_position = full_name.find(partial_name);
+		if (substr_position != std::string::npos)
+			return platform;
+	}
+
+	return NULL;
+}
+
 ClManager::clDeviceProp::~clDeviceProp()
 {
 	if (maxWorkItemDimensions)

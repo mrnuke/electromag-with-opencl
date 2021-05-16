@@ -273,6 +273,7 @@ public:
 	{
 		return *platforms;
 	};
+	const clPlatformProp *FindPlatformByName(std::string partial_name);
 
 	///}@
 };
