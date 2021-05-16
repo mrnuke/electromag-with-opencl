@@ -55,6 +55,10 @@ public:
 	bool FailOnFunctor(size_t functorIndex);
 
 	void GenerateParameterList(size_t *nDevices);
+	void SetPreferredPlatform(const char *partial_platform_name)
+	{
+		m_preferred_platform = std::string(partial_platform_name);
+	}
 
 private:
 	/// Specifies the error code incurred during the last global operation
@@ -114,6 +118,7 @@ private:
 	};
 	/// Contains data for each individual functor
 	std::vector<FunctorData> m_functors;
+	std::string m_preferred_platform;
 
 	CLerror LoadKernels(size_t deviceID);
 

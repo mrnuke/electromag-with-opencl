@@ -105,15 +105,20 @@ template <class T> bool CLElectrosFunctor<T>::FailOnFunctor(size_t functorIndex)
  * ===========================================================================*/
 template <class T> void CLElectrosFunctor<T>::PartitionData()
 {
-	// Get the number of available compute devices
-	// TODO: We are using the first available platform. There should be a better
-	// mechanism, which allows selecting the platform
-	vector<ClManager::clPlatformProp *> &plat =
-		m_DeviceManager.fstGetPlats();
-	vector<ClManager::clDeviceProp *> &devs = plat[0]->devices;
+	const ClManager::clPlatformProp *platform;
+
+	platform = m_DeviceManager.FindPlatformByName(m_preferred_platform);
+	if (!platform) {
+		cerr << "No platform '" << m_preferred_platform << "' found" << endl;
+		return;
+	}
+
+	std::cout<<"Using OpenCL platform: " << platform->name << std::endl;
+	auto &devs = platform->devices;
+
 	if (!m_nDevices) {
 		// TODO: signal an error
-		if (!plat.size())
+		if (!devs.size())
 			return;
 		m_nDevices = devs.size();
 	}
