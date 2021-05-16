@@ -54,7 +54,8 @@ static const struct SimulationParams param_list[] = {
 
 void TestCL(Vector3<Array<float> > &fieldLines,
 	    Array<electro::pointCharge<float> > &pointCharges, size_t n,
-	    float resolution, perfPacket &perfData, bool useCurvature);
+	    float resolution, perfPacket &perfData, bool useCurvature,
+	    const char *preferred_platform_name = "");
 
 using std::cerr;
 using std::cout;
@@ -110,7 +111,7 @@ static void print_simsize_help(const char *name)
 //              >out.txt  2>&1
 int main(int argc, char *argv[])
 {
-	const char *sim_name;
+	const char *sim_name, *cl_plat_name = NULL;
 
 	cout << " Electromagnetism simulation application" << endl;
 	cout << " Compiled on " << __DATE__ << " at " << __TIME__ << endl;
@@ -151,6 +152,8 @@ int main(int argc, char *argv[])
 			regressData = true;
 		} else if (!strcmp(argv[i], "--clmode")) {
 			clMode = true;
+		} else if (starts_with(argv[i], "--clplatform")) {
+			cl_plat_name = strnext(argv[i], '=');
 		} else {
 			cout << " Ignoring unknown argument: " << argv[i]
 			     << endl;
@@ -249,7 +252,8 @@ int main(int argc, char *argv[])
 
 	if (clMode && CPUenable) {
 		//StartConsoleMonitoring ( &CPUperf.progress );
-		TestCL(CPUlines, charges, n, 1.0, CPUperf, useCurvature);
+		TestCL(CPUlines, charges, n, 1.0, CPUperf, useCurvature,
+		       cl_plat_name);
 		CPUperf.progress = 1.0;
 		for (size_t i = 0; i < CPUperf.stepTimes.size(); i++) {
 			TimingInfo profiler = CPUperf.stepTimes[i];

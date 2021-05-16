@@ -24,16 +24,20 @@ using std::endl;
 
 void TestCL(Vector3<Array<float> > &fieldLines,
 	    Array<pointCharge<float> > &pointCharges, size_t n,
-	    float resolution, perfPacket &perfData, bool useCurvature)
+	    float resolution, perfPacket &perfData, bool useCurvature,
+	    const char *preferred_platform_name = "")
 {
 	CLElectrosFunctor<float>::BindDataParams dataParams = {
 		&fieldLines, &pointCharges, n,
 		resolution,  perfData,	    useCurvature
 	};
+
+	if (preferred_platform_name)
+		CLtest.SetPreferredPlatform(preferred_platform_name);
+
 	cout << "TestCL: Binding data" << endl;
 	CLtest.BindData((void *)&dataParams);
 	cout << "TestCL: Starting run" << endl;
 	CLtest.Run();
 	cout << "TestCL: done" << endl;
 }
-
