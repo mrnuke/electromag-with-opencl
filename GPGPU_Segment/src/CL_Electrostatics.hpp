@@ -82,13 +82,6 @@ private:
         Vector3<cl_mem> devFieldMem; 
         /// Device buffer for point charges
         cl_mem chargeMem;
-        /// Stores information about the GPU field lines allocation including
-        //GPUfieldData;
-        /// number of steps (pre-allocation), and number of lines
-        /// (post-allocation) available on the GPU
-        //PointChargeArray<CUdeviceptr>
-        /// Stores information about the GPU static charges allocation
-        //GPUchargeData;
         /// X-size of kernel block, dependent on selected kernel (MT/NON_MT)
         unsigned int blockXSize;
         /// kernel block size, dependent on selected kernel (MT/NON_MT)
@@ -97,18 +90,6 @@ private:
         size_t widthGlobX;
         /// Number of blocks that can be launched during a kernel call
         size_t nBlocksPerSegment;
-        /// This depends on how much device memory was available at allocation
-        /// time
-        /// Flags wheter the multithreaded kernel has been selected or not
-        //bool useMT;
-        /// Module containing the singlestep kernels
-        //CUmodule singlestepModule;
-        /// Module containing the multistep kernels
-        //CUmodule multistepModule;
-        /// Selected singlestep kernel
-        //CUfunction singlestepKernel;
-        /// Selected multistep kernel
-        //CUfunction multistepKernel;
         /// Keeps track of errors that ocuur on the context current to the
         /// functor
         CLerror lastOpErrCode;
@@ -133,7 +114,6 @@ private:
         cl_command_queue queue;
         /// Functor-specific performance information
         perfPacket perfData;
-        //FunctorData() {};
     };
     /// Contains data for each individual functor
     std::vector<FunctorData> m_functors;
@@ -156,18 +136,6 @@ template<class T>
 CLElectrosFunctor<T>::CLElectrosFunctor():
         m_nDevices(0)
 {
-    //dataBound = false;
-    //resourcesAllocated = false;
-
-    /*
-     * It is dangerous to call this in the constructor since the
-     * ClElectrosFunctor object is not fully initialized, and as a result,
-     * DeviceManager may also not be initialized. As a result, it is safer to
-     * initialize nDevices to zero and get the actual number of device later
-     * down the road, when CLElectrosFunctor is fully initialized, and
-     * DeviceManager will be guaranteed to exist
-     */
-    //m_nDevices = m_DeviceManager.GetNumDevices();
 }
 
 #endif//CL_ELECTROSTATICS_HPP

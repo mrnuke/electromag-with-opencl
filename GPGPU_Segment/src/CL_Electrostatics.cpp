@@ -253,45 +253,6 @@ void CLElectrosFunctor<T>::PostRun()
     }
 }
 
-/**=============================================================================
- * \brief Allocates device memory for given functor
- *
- * Allocates memory based on available resources
- * Returns false if any memory allocation fails
- * NOTES: This function is not thread safe and must be called from the same
- * context that performs memory copies and calls the kernel
- *
- * Based on available device memory, it might be necessary to split the data in
- * several smaller segments, where each segment will be processed by a different
- * series of kernel calls. The memory needs to be recopied for every kernel. To
- * ensure that device memory allocation is unlikely to fail, the amount of
- * available device RAM is queued, then the paddedSize for the point charges is
- * subtracted. While naive, this check should work for most cases.
- *
- * @param deviceID Device/functor combination on which to operate
- * @return First error code that is encountered
- * @return CUDA_SUCCESS if no error is encountered
- * ===========================================================================*/
-/*template<class T>
-CUresult CLElectrosFunctor<T>::AllocateGpuResources ( size_t deviceID )
-{
-}
-*/
-
-/**=============================================================================
- * \brief
- *
- * @param deviceID Device/functor combination on which to operate
- * @return First error code that is encountered
- * @return CUDA_SUCCESS if no error is encountered
- * ===========================================================================*/
-/*
-template<class T>
-CUresult CudaElectrosFunctor<T>::ReleaseGpuResources ( size_t deviceID )
-{
-}
-*/
-#include <cstdio>
 #define BLOCK_X 128
 #define BLOCK_X_MT 32
 #define BLOCK_Y_MT 8
@@ -370,18 +331,10 @@ void CLElectrosFunctor<T>::ReleaseResources()
     {
         FunctorData &data = m_functors[iDev];
         CLerror err = CL_SUCCESS;
-        //err = clReleaseKernel(kern);
-        //if (err)cout<<"clReleaseKernel returns: "<<err<<endl;
-        //clReleaseCommandQueue(queue);
-        //if (err)cout<<"clReleaseCommandQueue returns: "<<err<<endl;
         clReleaseContext(data.context);
         if (err)cout<<"clReleaseContext returns: "<<err<<endl;
 
         err = CL_SUCCESS;
-        //err |= clReleaseMemObject(arrdata.x);
-        //err |= clReleaseMemObject(arrdata.x);
-        //err |= clReleaseMemObject(arrdata.x);
-        //err |= clReleaseMemObject(charges);
         if (err)cout<<"clReleaseMemObject cummulates: "<<err<<endl;
     }
 }
@@ -523,18 +476,6 @@ unsigned long CLElectrosFunctor<T>::AuxFunctor()
 }
 
 /**=============================================================================
- * \brief Kernel Wrapper
- *
- * / Sets the kernel parameters and calls the kernel
- * ===========================================================================*/
-/*
-template<class T>
-CUresult CudaElectrosFunctor<T>::CallKernel ( FunctorData *params,
-                                size_t kernelElements )
-{
-}
-*/
-/**=============================================================================
  * \brief Loads and compile kernels
  *
  * @param deviceID Device/functor combination on which to operate
@@ -648,19 +589,6 @@ CLerror CLElectrosFunctor<T>::LoadKernels ( size_t deviceID )
 }
 
 /**=============================================================================
- * \brief Unspecialized vector width
- *
- * @param dev clDeviceProp to query
- * @return 1
- * ===========================================================================*/
-template<class T>
-size_t CLElectrosFunctor<T>::FindVectorWidth(
-    OpenCL::ClManager::clDeviceProp &dev)
-{
-    return 1;
-}
-
-/**=============================================================================
  * \brief Float vector width
  *
  * @param dev clDeviceProp to query
@@ -691,16 +619,6 @@ size_t CLElectrosFunctor<double>::FindVectorWidth(
  *
  * @return
  * ===========================================================================*/
-template <class T>
-const char* CLElectrosFunctor<T>::FindPrecType()
-{
-    return "";
-}
-/**=============================================================================
- * \brief 
- *
- * @return
- * ===========================================================================*/
 template <>
 const char* CLElectrosFunctor<float>::FindPrecType()
 {
@@ -715,16 +633,6 @@ template <>
 const char* CLElectrosFunctor<double>::FindPrecType()
 {
     return "double";
-}
-/**=============================================================================
- * \brief 
- *
- * @return
- * ===========================================================================*/
-template <class T>
-const char* CLElectrosFunctor<T>::FindVecType(size_t vecWidth)
-{
-    return "";
 }
 
 /**=============================================================================
