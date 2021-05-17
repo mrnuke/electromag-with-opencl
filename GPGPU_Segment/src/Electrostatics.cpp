@@ -17,29 +17,7 @@
  */
 #include "CL_Electrostatics.hpp"
 
-/* *****************************************************************************
- * Define specializations of the field function that call the generic template
- * These guarantee that the specializations will be compiled and included in the
- * export library
- ******************************************************************************/
-
 using electro::pointCharge;
-
-int CalcField(Array<Vector3<float> >& fieldLines,
-              Array<pointCharge<float> >& pointCharges,
-              size_t n, float resolution, perfPacket& perfData,
-              bool useCurvature)
-{
-    return -1;
-}
-
-int CalcField(Array<Vector3<double> >& fieldLines,
-              Array<pointCharge<double> >& pointCharges,
-              size_t n, double resolution, perfPacket& perfData,
-              bool useCurvature)
-{
-    return -1;
-}
 
 #include <iostream>
 using std::cout;
